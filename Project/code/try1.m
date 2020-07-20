@@ -22,6 +22,19 @@ data            = randi([0 1],nBits,1);
 modData         = qammod(data,M,symMap,'InputType','bit','UnitAveragePower',false,'PlotConstellation',true);
 [y,pathGains]   = step(Rayleigh,modData);
 rxsig           = step(awgnChan,y);
+
+rxsig_real      = real(rxsig);
+rxsig_img       = imag(rxsig);
+
+len=nBits/bps;
+for i=1:len
+    rxsig_2(2*i-1)=rxsig_real(i);
+    rxsig_2(2*i)=rxsig_img(i);
+end
+
+h1 = normrnd(0,(1/sqrt(2)))+i*normrnd(0,(1/sqrt(2)));
+rxsig_2=reshape(rxsig_2,[2*len,1]);
+
 decodedData     = step(sphDec,rxsig,pathGains); 
 dataOut         = double(decodedData(:));
 
