@@ -7,7 +7,7 @@ ebno=10;
 symMap       = [11,10,14,15,9,8,12,13,1,0,4,5,3,2,6,7];
 bitTable     = de2bi(symMap,bps,'left-msb');
 
-sym          = qammod(symMap(1:M),M,symMap,'UnitAveragePower',false,'PlotConstellation',true);
+sym          = qammod(symMap(1:M),M,symMap,'UnitAveragePower',false,'PlotConstellation',false);
 sym          = reshape(sym,[M,1]);
 averagePower = sum(abs(sym).^2)/16;
 
@@ -19,7 +19,7 @@ berRate  = comm.ErrorRate;
 
 
 data            = randi([0 1],nBits,1);
-modData         = qammod(data,M,symMap,'InputType','bit','UnitAveragePower',false,'PlotConstellation',true);
+modData         = qammod(data,M,symMap,'InputType','bit','UnitAveragePower',false,'PlotConstellation',false);
 [y,pathGains]   = step(Rayleigh,modData);
 rxsig           = step(awgnChan,y);
 
@@ -27,13 +27,22 @@ rxsig_real      = real(rxsig);
 rxsig_img       = imag(rxsig);
 
 len=nBits/bps;
-for i=1:len
-    rxsig_2(2*i-1)=rxsig_real(i);
-    rxsig_2(2*i)=rxsig_img(i);
+for j=1:len
+    rxsig_2(2*j-1)=rxsig_real(j);
+    rxsig_2(2*j)=rxsig_img(j);
 end
 
-h1 = normrnd(0,(1/sqrt(2)))+i*normrnd(0,(1/sqrt(2)));
 rxsig_2=reshape(rxsig_2,[2*len,1]);
+
+h11_r = normrnd(0,(1/sqrt(2)));
+h11_i = normrnd(0,(1/sqrt(2)));
+h12_r = normrnd(0,(1/sqrt(2)));
+h12_i = normrnd(0,(1/sqrt(2)));
+h21_r = normrnd(0,(1/sqrt(2)));
+h21_i = normrnd(0,(1/sqrt(2)));
+h22_r = normrnd(0,(1/sqrt(2)));
+h22_i = normrnd(0,(1/sqrt(2)));
+
 
 decodedData     = step(sphDec,rxsig,pathGains); 
 dataOut         = double(decodedData(:));
