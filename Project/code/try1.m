@@ -43,6 +43,8 @@ h21_i = normrnd(0,(1/sqrt(2)));
 h22_r = normrnd(0,(1/sqrt(2)));
 h22_i = normrnd(0,(1/sqrt(2)));
 
+B = [[h11_r,-h11_i,h12_r,-h12_i];[h11_i,h11_r,h12_i,h12_r];[h21_r,-h21_i,h22_r,-h22_i];[h21_i,h21_r,h22_i,h22_r]];
+A = zeros(4,1)+3;
 
 decodedData     = step(sphDec,rxsig,pathGains); 
 dataOut         = double(decodedData(:));
