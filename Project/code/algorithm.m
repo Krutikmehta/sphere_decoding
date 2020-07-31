@@ -4,7 +4,7 @@ global B; B= zeros(4,1);
 global T; T= zeros(4,1);
 global E; E= zeros(4,1);
 global x_est; x_est= [];
-global d_c;d_c =10;
+global d_c;d_c = 10;
 
 
 function bounds(y(i),E(i),d_c,T(i),i,R(i,i))
