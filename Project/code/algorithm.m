@@ -7,7 +7,7 @@ global x_est; x_est= [];
 global d_c;d_c = 10;
 
 
-function bounds(y(i),E(i),d_c,T(i),i,R(i,i))
+function bounds(E(i),d_c,T(i),i,R(i,i))
     if d_c < T(i)
         increment(i,m);
     else
