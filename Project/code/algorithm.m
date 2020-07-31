@@ -5,9 +5,12 @@ global T; T= zeros(4,1);
 global E; E= zeros(4,1);
 global x_est; x_est= [];
 global d_c;d_c = 10;
+global m; m=4;
+global i; i=m;
 
 
-function bounds(E(i),d_c,T(i),i,R(i,i))
+
+function bounds(y,E,d_c,T,i,R)
     if d_c < T(i)
         increment(i,m);
     else
@@ -20,7 +23,7 @@ function bounds(E(i),d_c,T(i),i,R(i,i))
 end
 
 
-function natural_spanning(x(i),B(i))
+function natural_spanning(x,B,i)
     x(i)=x(i)+1;
     if x(i) <= B(i)
         decrement(R,x,T(i),E(i),y(i));      
@@ -42,7 +45,7 @@ end
 
 
 
-function decrement(R,x,T(i),E(i),y(i))
+function decrement(R,x,T,E,y,i)
     if i>1
         for j = i:m
             E(i-1) = E(i-1) + R(i-1,j)*x(j);
@@ -52,12 +55,12 @@ function decrement(R,x,T(i),E(i),y(i))
         bounds(y(i),E(i),d_c,T(i),i,R(i,i));
         
     else
-        x_est = (x_est x);
-        d' = T(1)+(y(1)-E(1)-R(1,1)*x(1))^2;
-        if d'<d_c
-            d_c = d';
+        x_est = [x_est x];
+        d = T(1)+(y(1)-E(1)-R(1,1)*x(1))^2;
+        if d<d_c
+            d_c = d;
             for L = 1:m
-                B(L) = min(Q-1,floor(y(L)-E(L)+sqrt(d_c-T(L)))/R(L,L)));
+                B(L) = min(Q-1,floor(y(L)-E(L)+sqrt(d_c-T(L))/R(L,L)));
             end
         natural_spanning(x(i),B(i));
         
