@@ -27,7 +27,7 @@ end
 function natural_spanning(x,B,i)
     x(i)=x(i)+1;
     if x(i) <= B(i)
-        decrement(R,x,T(i),E(i),y(i));      
+        decrement(R,x,T,E,y,i);      
     else
         increment(i,m);
     end
@@ -37,10 +37,10 @@ end
 
 function increment(i,m)
     if i==m
-        return
+        return x_est
     else
         i=i+1;
-        natural_spanning(x(i),B(i));
+        natural_spanning(x,B,i);
     end
 end
 
@@ -53,7 +53,7 @@ function decrement(R,x,T,E,y,i)
         end
         T(i-1) = T(i) + (y(i)-E(i)-R(i,i)*x(i))^2;
         i = i-1;
-        bounds(y(i),E(i),d_c,T(i),i,R(i,i));
+        bounds(y,E,d_c,T,i,R);
         
     else
         x_est = [x_est x];
@@ -63,7 +63,7 @@ function decrement(R,x,T,E,y,i)
             for L = 1:m
                 B(L) = min(Q-1,floor(y(L)-E(L)+sqrt(d_c-T(L))/R(L,L)));
             end
-        natural_spanning(x(i),B(i));
+        natural_spanning(x,B,i);
         
         end
     
