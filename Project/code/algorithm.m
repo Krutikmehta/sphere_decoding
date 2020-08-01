@@ -1,19 +1,18 @@
-global x; x= zeros(4,1);
-global A; A= zeros(4,1);
-global B; B= zeros(4,1);
-global T; T= zeros(4,1);
-global E; E= zeros(4,1);
-global x_est; x_est= [];
-global d_c;d_c = 2;
-global m; m=4;
-global i; i=m;
-global Q, Q=4;
-global R; R=[1,2,1,2;0,1,2,1;0,0,3,1;0,0,0,2];
-y = [1,2,3,1];
+function estimated_matrix = sphere_dec(d_c,R,y)
 
+    global x; x= zeros(4,1);
+    global A; A= zeros(4,1);
+    global B; B= zeros(4,1);
+    global T; T= zeros(4,1);
+    global E; E= zeros(4,1);
+    global x_est; x_est= [];
+    global d_c;d_c = 2;
+    global m; m=4;
+    global i; i=m;
+    global Q, Q=4;
+    global R; R=[1,2,1,2;0,1,2,1;0,0,3,1;0,0,0,2];
+    y = [1,2,3,1];
 
-function estimated_matrix = sphere_dec(x,A,B,T,E,x_est,d_c,m,i,Q,R,y)
-    
     bounds(x,A,B,T,E,x_est,d_c, m,i,Q,R,y);
 
     function bounds(x,A,B,T,E,x_est,d_c,m,i,Q,R,y)
