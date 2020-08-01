@@ -14,11 +14,12 @@ function bounds(y,E,d_c,T,i,R)
     if d_c < T(i)
         increment(i,m);
     else
-        compute= (y(i)-E(i)+sqrt(d_c-T(i)))/R(i,i);
-        A(i)=max(0,ceil(compute));
-        B(i)=min(Q-1,floor(compute));
+        compute1= (y(i)-E(i)-sqrt(d_c-T(i)))/R(i,i);
+        compute2= (y(i)-E(i)+sqrt(d_c-T(i)))/R(i,i);
+        A(i)=max(0,ceil(compute1));
+        B(i)=min(Q-1,floor(compute2));
         x(i)=A(i)-1;
-        natural_spanning(x(i),B(i));
+        natural_spanning(x,B,i);
     end
 end
 
