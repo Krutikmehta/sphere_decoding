@@ -20,7 +20,8 @@ berRate  = comm.ErrorRate;
 
 data            = randi([0 1],nBits,1);
 modData         = qammod(data,M,symMap,'InputType','bit','UnitAveragePower',false,'PlotConstellation',false);
-[y,pathGains]   = step(Rayleigh,modData);
+%[y,pathGains]   = step(Rayleigh,modData);
+for 
 rxsig           = step(awgnChan,y);
 
 rxsig_real      = real(rxsig);
@@ -45,6 +46,10 @@ h22_i = normrnd(0,(1/sqrt(2)));
 
 B = [[h11_r,-h11_i,h12_r,-h12_i];[h11_i,h11_r,h12_i,h12_r];[h21_r,-h21_i,h22_r,-h22_i];[h21_i,h21_r,h22_i,h22_r]];
 A = zeros(4,1)+3;
+
+y_c = rxsig_2 + B*A;
+[Q,R] = qr(2*B);
+
 
 decodedData     = step(sphDec,rxsig,pathGains); 
 dataOut         = double(decodedData(:));
