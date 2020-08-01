@@ -4,10 +4,9 @@ global B; B= zeros(4,1);
 global T; T= zeros(4,1);
 global E; E= zeros(4,1);
 global x_est; x_est= [];
-global d_c;d_c = 10;
+global d_c;d_c = 2;
 global m; m=4;
 global i; i=m;
-
 
 
 function bounds(y,E,d_c,T,i,R)
@@ -37,7 +36,7 @@ end
 
 function increment(i,m)
     if i==m
-        return x_est
+        return 
     else
         i=i+1;
         natural_spanning(x,B,i);
