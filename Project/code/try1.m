@@ -65,7 +65,7 @@ y_c = rxsig_2 + B*A;
 decodedData = zeros(4,500);
 
 for z = 1:len/2
-    x_est = algo1(1,y_c(:,z),R);
+    x_est = sphere_dec(1,y_c(:,z),R);
     tempmat = x_est-y_c(:,z);
     dist = vecnorm(tempmat);
     [M,I] = min(dist);
