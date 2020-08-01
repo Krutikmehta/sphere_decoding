@@ -12,9 +12,9 @@ sym          = reshape(sym,[M,1]);
 averagePower = sum(abs(sym).^2)/16;
 
 
-Rayleigh = comm.RayleighChannel('PathGainsOutputPort',true,'RandomStream','Global stream','NormalizePathGains',true);
+%Rayleigh = comm.RayleighChannel('PathGainsOutputPort',true,'RandomStream','Global stream','NormalizePathGains',true);
 awgnChan = comm.AWGNChannel('NoiseMethod','Signal to noise ratio (SNR)','SNR',10,'SignalPower',averagePower);
-sphDec   = comm.SphereDecoder('Constellation',sym,'BitTable',bitTable,'DecisionType','Hard');
+%sphDec   = comm.SphereDecoder('Constellation',sym,'BitTable',bitTable,'DecisionType','Hard');
 berRate  = comm.ErrorRate;
 
 
@@ -31,10 +31,10 @@ h21_r = normrnd(0,(1/sqrt(2)));
 h21_i = normrnd(0,(1/sqrt(2)));
 h22_r = normrnd(0,(1/sqrt(2)));
 h22_i = normrnd(0,(1/sqrt(2)));
-h11 = h11_r + i*h11_i;
-h12 = h12_r + i*h12_i;
-h21 = h21_r + i*h21_i;
-h22 = h22_r + i*h22_i;
+h11 = h11_r + 1j*h11_i;
+h12 = h12_r + 1j*h12_i;
+h21 = h21_r + 1j*h21_i;
+h22 = h22_r + 1j*h22_i;
 
 H = [[h11,h12];[h21,h22]];
 
@@ -65,11 +65,12 @@ y_c = rxsig_2 + B*A;
 decodedData = zeros(4,500);
 
 for z = 1:len/2
-    x_est = sphere_dec(1,y_c(:,z),R);
-    tempmat = x_est-y_c(:,z);
+    x_mat = sphere_dec(1,R,y_c(:,z));
+    x_mat
+    tempmat = x_mat-y_c(:,z);
     dist = vecnorm(tempmat);
-    [M,I] = min(dist);
-    decodedData(z) = 2*x_est(I) - A;
+    [M1,I] = min(dist);
+    decodedData(:,z) = 2*x_mat(I) - A;
    
 end
 
