@@ -12,16 +12,13 @@ sym          = reshape(sym,[M,1]);
 averagePower = sum(abs(sym).^2)/16;
 
 
-%Rayleigh = comm.RayleighChannel('PathGainsOutputPort',true,'RandomStream','Global stream','NormalizePathGains',true);
 awgnChan = comm.AWGNChannel('NoiseMethod','Signal to noise ratio (SNR)','SNR',10,'SignalPower',averagePower);
-%sphDec   = comm.SphereDecoder('Constellation',sym,'BitTable',bitTable,'DecisionType','Hard');
 berRate  = comm.ErrorRate;
 
 
 data            = randi([0 1],nBits,1);
 modData         = qammod(data,M,symMap,'InputType','bit','UnitAveragePower',false,'PlotConstellation',true);
-%[y,pathGains]   = step(Rayleigh,modData);
-%rxsig           = step(awgnChan,y);
+
 
 h11_r = normrnd(0,(1/sqrt(2)));
 h11_i = normrnd(0,(1/sqrt(2)));
@@ -47,6 +44,7 @@ rxsig           = step(awgnChan,y);
 rxsig_real      = real(rxsig);
 rxsig_img       = imag(rxsig);
 len=nBits/bps;
+
 for i=1:len
     rxsig_2(2*i-1)=rxsig_real(i);
     rxsig_2(2*i)=rxsig_img(i);
@@ -59,15 +57,17 @@ B = [[h11_r,-h11_i,h12_r,-h12_i];[h11_i,h11_r,h12_i,h12_r];[h21_r,-h21_i,h22_r,-
 A = zeros(4,1)+3;
 
 y_c = rxsig_2 + B*A;
-
 [Q,R] = qr(2*B);
+D = diag(sign(diag(R)));
+Qunique = Q*D; 
+Runique = D*R;
+y_dash = Qunique'*y_c;
 
 decodedData = zeros(4,500);
 
-for z = 1:len/2
-    x_mat = sphere_dec(1,R,y_c(:,z));
-    x_mat
-    tempmat = x_mat-y_c(:,z);
+for z = 1:(len/2)
+    x_mat = sphere_dec(1000,Runique,y_dash(:,z));
+    tempmat = x_mat-y_dash(:,z);
     dist = vecnorm(tempmat);
     [M1,I] = min(dist);
     decodedData(:,z) = 2*x_mat(I) - A;
@@ -77,11 +77,10 @@ end
 
 decodedData = reshape(decodedData(:),[2,1000]);
 decodedData = decodedData';
-
 rxData = qamdemod(decodedData,M,symMap);
+rxData = reshape(rxData,[4000,1]);
 
-%decodedData     = step(sphDec,rxsig,pathGains);
 dataOut         = double(rxData(:));
 
-errorStats = step(berRate,data,dataOut);
+errorStats = step(berRate,data,rxData);
 errorStats(1:2)

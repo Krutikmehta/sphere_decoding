@@ -1,4 +1,8 @@
-function estimated_matrix = sphere_dec(d_c,R,y);
+%global R; R=[-4.38112687193725,0,0.995272654476084,1.30856086206953;0,-4.38112687193725,-1.30856086206953,0.995272654476084;0,0,5.07631532632225,-4.44089209850063e-16;0,0,0,-5.07631532632225];
+%global d_c;d_c = 100;
+%y =[7.73505848559650;1.27232920478601;-7.97395403822037;13.0184198562958];
+%x_est = sphere(d_c,R,y)
+function x_est = sphere(d_c,R,y);
 
     global x; x= zeros(4,1);
     global A; A= zeros(4,1);
@@ -6,67 +10,66 @@ function estimated_matrix = sphere_dec(d_c,R,y);
     global T; T= zeros(4,1);
     global E; E= zeros(4,1);
     global x_est; x_est= [];
-    global d_c;d_c = 2;
     global m; m=4;
     global i; i=m;
     global Q, Q=4;
-    global R; R=[1,2,1,2;0,1,2,1;0,0,3,1;0,0,0,2];
-    y = [1,2,3,1];
-    bounds(x,A,B,T,E,x_est,d_c, m,i,Q,R,y);
-    function bounds(x,A,B,T,E,x_est,d_c,m,i,Q,R,y)
+
+    bounds(x,A,B,T,E,d_c, m,i,Q,R,y);
+    function bounds(x,A,B,T,E,d_c,m,i,Q,R,y)
         if d_c < T(i)
-            increment(x,A,B,T,E,x_est,d_c, m,i,Q,R,y);
+            increment(x,A,B,T,E,d_c, m,i,Q,R,y);
         else
-            compute1= (y(i)-E(i)-sqrt(d_c-T(i)))/R(i,i);
-            compute2= (y(i)-E(i)+sqrt(d_c-T(i)))/R(i,i);
-            A(i)=max(0,ceil(compute1));
-            B(i)=min(Q-1,floor(compute2));
+            compute1= (y(i)-E(i)-sqrt(d_c-T(i)))/R(i,i)
+            compute2= (y(i)-E(i)+sqrt(d_c-T(i)))/R(i,i)
+            A(i)=max(0,ceil(compute1))
+            B(i)=min(Q-1,floor(compute2))
             x(i)=A(i)-1;
-            natural_spanning(x,A,B,T,E,x_est,d_c, m,i,Q,R,y);
+            natural_spanning(x,A,B,T,E,d_c, m,i,Q,R,y);
         end
     end
 
 
-    function natural_spanning(x,A,B,T,E,x_est,d_c, m,i,Q,R,y)
+    function natural_spanning(x,A,B,T,E,d_c, m,i,Q,R,y)
         x(i)=x(i)+1;
         if x(i) <= B(i)
-            decrement(x,A,B,T,E,x_est,d_c, m,i,Q,R,y);      
+            decrement(x,A,B,T,E,d_c, m,i,Q,R,y);      
         else
-            increment(x,A,B,T,E,x_est,d_c, m,i,Q,R,y);
+            increment(x,A,B,T,E,d_c, m,i,Q,R,y);
         end
     end
 
 
 
-    function increment(x,A,B,T,E,x_est,d_c, m,i,Q,R,y)
+    function increment(x,A,B,T,E,d_c, m,i,Q,R,y)
         if i==m
-            estimated_matrix = x_est;
+            return
         else
             i=i+1;
-            natural_spanning(x,A,B,T,E,x_est,d_c, m,i,Q,R,y);
+            natural_spanning(x,A,B,T,E,d_c, m,i,Q,R,y);
         end
     end
 
 
 
-    function decrement(x,A,B,T,E,x_est,d_c, m,i,Q,R,y)
+    function  decrement(x,A,B,T,E,d_c, m,i,Q,R,y)
         if i>1
             for j = i:m
                 E(i-1) = E(i-1) + R(i-1,j)*x(j);
             end
             T(i-1) = T(i) + (y(i)-E(i)-R(i,i)*x(i))^2;
             i = i-1;
-            bounds(x,A,B,T,E,x_est,d_c, m,i,Q,R,y);
+            bounds(x,A,B,T,E,d_c, m,i,Q,R,y);
 
         else
-            x_est = [x_est x];
+            x_est = [x_est x];      
+            
             d = T(1)+(y(1)-E(1)-R(1,1)*x(1))^2;
             if d<d_c
                 d_c = d;
                 for L = 1:m
                     B(L) = min(Q-1,floor(y(L)-E(L)+sqrt(d_c-T(L))/R(L,L)));
                 end
-            natural_spanning(x,A,B,T,E,x_est,d_c, m,i,Q,R,y);
+            natural_spanning(x,A,B,T,E,d_c, m,i,Q,R,y);
 
             end
 
