@@ -4,7 +4,7 @@ nBits=1e3*bps;
 ebno=10;
 
 
-symMap       = [11,10,14,15,9,8,12,13,1,0,4,5,3,2,6,7];
+symMap       = [11 10 14 15 9 8 12 13 1 0 4 5 3 2 6 7];
 bitTable     = de2bi(symMap,bps,'left-msb');
 
 sym          = qammod(symMap(1:M),M,symMap,'UnitAveragePower',false,'PlotConstellation',true);
@@ -75,12 +75,14 @@ for z = 1:(len/2)
 end
 
 
+
 decodedData = reshape(decodedData(:),[2,1000]);
 decodedData = decodedData';
+decodedData = decodedData(:,1)+1j*decodedData(:,2);
 rxData = qamdemod(decodedData,M,symMap);
-rxData = reshape(rxData,[4000,1]);
+dataOut = reshape(de2bi(rxData,'left-msb')',[nBits,1]);
+%rxData = reshape(rxData,[4000,1]);
+%dataOut         = double(rxData(:));
 
-dataOut         = double(rxData(:));
-
-errorStats = step(berRate,data,rxData);
+errorStats = step(berRate,data,dataOut);
 errorStats(1:2)

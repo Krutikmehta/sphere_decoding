@@ -19,10 +19,10 @@ function x_est = sphere(d_c,R,y);
         if d_c < T(i)
             increment(x,A,B,T,E,d_c, m,i,Q,R,y);
         else
-            compute1= (y(i)-E(i)-sqrt(d_c-T(i)))/R(i,i)
-            compute2= (y(i)-E(i)+sqrt(d_c-T(i)))/R(i,i)
-            A(i)=max(0,ceil(compute1))
-            B(i)=min(Q-1,floor(compute2))
+            compute1= (y(i)-E(i)-sqrt(d_c-T(i)))/R(i,i);
+            compute2= (y(i)-E(i)+sqrt(d_c-T(i)))/R(i,i);
+            A(i)=max(0,ceil(compute1));
+            B(i)=min(Q-1,floor(compute2));
             x(i)=A(i)-1;
             natural_spanning(x,A,B,T,E,d_c, m,i,Q,R,y);
         end
