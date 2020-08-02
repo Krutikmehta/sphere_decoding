@@ -79,10 +79,8 @@ end
 decodedData = reshape(decodedData(:),[2,1000]);
 decodedData = decodedData';
 decodedData = decodedData(:,1)+1j*decodedData(:,2);
-rxData = qamdemod(decodedData,M,symMap);
-dataOut = reshape(de2bi(rxData,'left-msb')',[nBits,1]);
-%rxData = reshape(rxData,[4000,1]);
-%dataOut         = double(rxData(:));
+rxData = qamdemod(decodedData,M,symMap,'OutputType','bit','UnitAveragePower',false);
 
-errorStats = step(berRate,data,dataOut);
+
+errorStats = step(berRate,data,rxData);
 errorStats(1:2)
