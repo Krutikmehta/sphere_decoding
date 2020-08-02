@@ -34,16 +34,15 @@ h21 = h21_r + 1j*h21_i;
 h22 = h22_r + 1j*h22_i;
 
 H = [[h11,h12];[h21,h22]];
-
-x = reshape(modData,[2,500]);
+len=nBits/bps;
+x = reshape(modData,[2,len/2]);
 y = H*x;
 y = y(:);
 
 rxsig           = step(awgnChan,y);
-
 rxsig_real      = real(rxsig);
 rxsig_img       = imag(rxsig);
-len=nBits/bps;
+
 
 for i=1:len
     rxsig_2(2*i-1)=rxsig_real(i);
@@ -63,20 +62,18 @@ Qunique = Q*D;
 Runique = D*R;
 y_dash = Qunique'*y_c;
 
-decodedData = zeros(4,500);
+decodedData = zeros(4,len/2);
 
 for z = 1:(len/2)
-    x_mat = sphere_dec(1000,Runique,y_dash(:,z));
-    tempmat = x_mat-y_dash(:,z);
+    x_mat = sphere_dec(1,Runique,y_dash(:,z));
+    tempmat = x_mat-y_dash(:,z);  
     dist = vecnorm(tempmat);
     [M1,I] = min(dist);
     decodedData(:,z) = 2*x_mat(I) - A;
    
 end
 
-
-
-decodedData = reshape(decodedData,[2,1000]);
+decodedData = reshape(decodedData,[2,len]);
 decodedData = decodedData';
 decodedData = decodedData(:,1)+1j*decodedData(:,2);
 

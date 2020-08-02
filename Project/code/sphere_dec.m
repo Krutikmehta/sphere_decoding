@@ -13,7 +13,7 @@ function x_est = sphere(d_c,R,y);
     global m; m=4;
     global i; i=m;
     global Q, Q=4;
-
+    
     bounds(x,A,B,T,E,d_c, m,i,Q,R,y);
     function bounds(x,A,B,T,E,d_c,m,i,Q,R,y)
         if d_c < T(i)
@@ -42,7 +42,12 @@ function x_est = sphere(d_c,R,y);
 
     function increment(x,A,B,T,E,d_c, m,i,Q,R,y)
         if i==m
-            return
+            if isempty(x_est)
+                d_c = 2*d_c;
+                bounds(x,A,B,T,E,d_c, m,i,Q,R,y) 
+            else 
+                return
+            end
         else
             i=i+1;
             natural_spanning(x,A,B,T,E,d_c, m,i,Q,R,y);
@@ -61,13 +66,12 @@ function x_est = sphere(d_c,R,y);
             bounds(x,A,B,T,E,d_c, m,i,Q,R,y);
 
         else
-            x_est = [x_est x];      
-            
+            x_est = [x_est x];           
             d = T(1)+(y(1)-E(1)-R(1,1)*x(1))^2;
             if d<d_c
                 d_c = d;
                 for L = 1:m
-                    B(L) = min(Q-1,floor(y(L)-E(L)+sqrt(d_c-T(L))/R(L,L)));
+                    B(L) = min(Q-1,floor((y(L)-E(L)+sqrt(d_c-T(L)))/R(L,L)));
                 end
             natural_spanning(x,A,B,T,E,d_c, m,i,Q,R,y);
 
