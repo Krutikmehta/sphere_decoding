@@ -36,10 +36,10 @@ h22 = h22_r + 1j*h22_i;
 H = [[h11,h12];[h21,h22]];
 len=nBits/bps;
 x = reshape(modData,[2,len/2]);
-y = H*x;
-y = y(:);
+y1 = H*x;
+y1 = y1(:);
 
-rxsig           = step(awgnChan,y);
+rxsig           = step(awgnChan,y1);
 rxsig_real      = real(rxsig);
 rxsig_img       = imag(rxsig);
 
@@ -53,9 +53,9 @@ rxsig_2=reshape(rxsig_2,[4,len/2]);
 
 
 B = [[h11_r,-h11_i,h12_r,-h12_i];[h11_i,h11_r,h12_i,h12_r];[h21_r,-h21_i,h22_r,-h22_i];[h21_i,h21_r,h22_i,h22_r]];
-A = zeros(4,1)+3;
+shift = zeros(4,1)+3;
 
-y_c = rxsig_2 + B*A;
+y_c = rxsig_2 + B*shift;
 [Q,R] = qr(2*B);
 D = diag(sign(diag(R)));
 Qunique = Q*D; 
@@ -69,7 +69,7 @@ for z = 1:(len/2)
     tempmat = x_mat-y_dash(:,z);  
     dist = vecnorm(tempmat);
     [M1,I] = min(dist);
-    decodedData(:,z) = 2*x_mat(I) - A;
+    decodedData(:,z) = 2*x_mat(I) - shift;
    
 end
 
@@ -80,4 +80,4 @@ decodedData = decodedData(:,1)+1j*decodedData(:,2);
 rxData = qamdemod(decodedData,M,symMap,'OutputType','bit','UnitAveragePower',false);
 
 errorStats = step(berRate,data,rxData);
-errorStats(1:2)
+errorStats
