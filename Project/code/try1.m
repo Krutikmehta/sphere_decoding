@@ -76,11 +76,11 @@ end
 
 
 
-decodedData = reshape(decodedData(:),[2,1000]);
+decodedData = reshape(decodedData,[2,1000]);
 decodedData = decodedData';
 decodedData = decodedData(:,1)+1j*decodedData(:,2);
-rxData = qamdemod(decodedData,M,symMap,'OutputType','bit','UnitAveragePower',false);
 
+rxData = qamdemod(decodedData,M,symMap,'OutputType','bit','UnitAveragePower',false);
 
 errorStats = step(berRate,data,rxData);
 errorStats(1:2)
