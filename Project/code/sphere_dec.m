@@ -2,7 +2,7 @@
 %global d_c;d_c = 100;
 %y =[7.73505848559650;1.27232920478601;-7.97395403822037;13.0184198562958];
 %x_est = sphere(d_c,R,y)
-function x_est = sphere(d_c,R,y);
+function x_est = sphere_dec(d_c,R,y);
 
     global x; x= zeros(4,1);
     global A; A= zeros(4,1);
@@ -44,7 +44,7 @@ function x_est = sphere(d_c,R,y);
         if i==m
             if isempty(x_est)
                 d_c = 2*d_c;
-                bounds(x,A,B,T,E,d_c, m,i,Q,R,y) 
+                x_est = sphere_dec(d_c,R,y);
             else 
                 return
             end
