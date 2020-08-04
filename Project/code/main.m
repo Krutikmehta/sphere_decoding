@@ -1,7 +1,7 @@
 bps=4; %bits per signal
 M=2^bps;
 nBits=1e3*bps;
-snr=10; %SNR
+snr=20; %SNR
 
 %constellation
 symMap       = [11 10 14 15 9 8 12 13 1 0 4 5 3 2 6 7];
@@ -70,6 +70,7 @@ y_dash = Qunique'*y_c;
 decodedData = zeros(4,len/2);
 
 
+
 %decoding using sphere decoding
 for z = 1:(len/2)
     x_mat = sphere_dec(1/2,Runique,y_dash(:,z));
@@ -87,5 +88,13 @@ decodedData = decodedData(:,1)+1j*decodedData(:,2);
 rxData = qamdemod(decodedData,M,symMap)';
 rxData = rxData(:);
 
+%simple ML detection
+decodedData_ML = simpleMLdetection(rxsig,H,M,symMap);
+
+%demodulation ML
+rxData_ML = qamdemod(decodedData_ML,M,symMap)';
+rxData_ML = rxData_ML(:);
+
 %error analysis
 errorStats = ber(data,rxData);
+errorStats_ML = ber(data,rxData_ML);
