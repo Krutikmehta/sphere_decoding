@@ -71,10 +71,9 @@ decodedData = zeros(4,len/2);
 
 for z = 1:(len/2)
     x_mat = sphere_dec(1/2,Runique,y_dash(:,z))
-    tempmat = x_mat-y_dash(:,z)
-    dist = vecnorm(tempmat)
-    [M1,I] = min(dist)
-    2*x_mat(:,I)
+    tempmat = x_mat-y_dash(:,z);
+    dist = vecnorm(tempmat);
+    [M1,I] = min(dist);
     decodedData(:,z) = 2*x_mat(:,I) - shift;
    
 end
