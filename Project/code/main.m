@@ -71,6 +71,8 @@ y_dash = Qunique'*y_c;
 
 decodedData = zeros(4,len/2);
 
+
+%decoding using sphere decoding
 for z = 1:(len/2)
     x_mat = sphere_dec(1/2,Runique,y_dash(:,z));
     tempmat = x_mat-y_dash(:,z);  
