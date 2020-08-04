@@ -1,4 +1,4 @@
-function modData = qammod_idp(data,M,symMap)
+function modData = qammod(data,M,symMap)
 %M = 16;
 %symMap       = [11 10 14 15 9 8 12 13 1 0 4 5 3 2 6 7];
 %data            = randi([0 1],16,1);

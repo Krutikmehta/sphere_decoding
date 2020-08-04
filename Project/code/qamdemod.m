@@ -1,4 +1,4 @@
-function demodData = qamdemod_idp(data,M,symMap)
+function demodData = qamdemod(data,M,symMap)
 %M = 16;
 %symMap       = [11 10 14 15 9 8 12 13 1 0 4 5 3 2 6 7];
 %data            = [1.000000000000000 - 3.000000000000000i;3.000000000000000 + 3.000000000000000i;3.000000000000000 - 1.000000000000000i;1.000000000000000 + 3.000000000000000i];

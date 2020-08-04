@@ -6,8 +6,8 @@ function rxsig = awgn(y1,snr,averagePower)
     sigma = sqrt(N0/2);
     
     %real + imaginary part
-    n1 = normrnd(0,sigma,length(y1));
-    n2 = normrnd(0,sigma,length(y1));
+    n1 = normrnd(0,sigma,[length(y1),1]);
+    n2 = normrnd(0,sigma,[length(y1),1]);
     
     %complex noise
     n = n1 + 1j*n2;
