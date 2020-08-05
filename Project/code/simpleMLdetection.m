@@ -1,7 +1,4 @@
-function decodedData = simpleMLdetection(rxsig,H,M,symMap)
-
-%constellation
-bitTable     = de2bi(symMap,4,'left-msb');
+function decodedData = simpleMLdetection(rxsig,H,M)
 
 %symbolset modulation and reshaping
 Re = -(sqrt(M)-1):2:(sqrt(M)-1);
