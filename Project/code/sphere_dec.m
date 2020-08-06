@@ -64,12 +64,13 @@ function x_est = sphere_dec(d_c,R_mat,y);
             bounds(x,A,B,T,E,d_c, m,i,Q,R_mat,y);
 
         else
-            x_est = [x_est x];           
+                       
             d = T(1)+(y(1)-E(1)-R_mat(1,1)*x(1))^2;
             if d<d_c
+                x_est = x;
                 d_c = d;
                 for L = 1:m
-                    B(L) = min(Q-1,floor((y(L)-E(L)+sqrt(d_c-T(L)))/R_mat(L,L)));
+                    B(L) = min(Q-1,floor( (y(L)-E(L)+sqrt(d_c-T(L)))/R_mat(L,L) ));
                 end
             natural_spanning(x,A,B,T,E,d_c, m,i,Q,R_mat,y);
 

@@ -6,7 +6,7 @@
 bps=4; 
 M=2^bps;
 nBits=1e3*bps;
-snr=20; 
+snr=25; 
 
 %constellation
 symMap       = [11 10 14 15 9 8 12 13 1 0 4 5 3 2 6 7];
@@ -71,7 +71,7 @@ shift = zeros(4,1)+3;
 
 y_c = rxsig_2 + B*shift;
 [Q,R] = qr(2*B);
-D = diag(sign(diag(R)));
+D = diag(sign(diag(R)));    
 Qunique = Q*D; 
 Runique = D*R;
 y_dash = Qunique'*y_c;
@@ -81,11 +81,8 @@ decodedData = zeros(4,len/2);
 
 %decoding using sphere decoding
 for z = 1:(len/2)
-    x_mat = sphere_dec(1/2,Runique,y_dash(:,z));
-    tempmat = x_mat-y_dash(:,z);  
-    dist = vecnorm(tempmat);
-    [M1,I] = min(dist);
-    decodedData(:,z) = 2*x_mat(:,I) - shift;
+    x_mat = sphere_dec(1,Runique,y_dash(:,z))
+    decodedData(:,z) = 2*x_mat - shift;
    
 end
 
