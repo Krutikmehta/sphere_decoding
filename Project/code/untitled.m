@@ -1,81 +1,113 @@
+% 16 QAM 2x2 communication system
+%rayleigh channel fading
+%decoding using sphere decoder
 
-function x_est = sphere_dec(d_c,R_mat,y);
-
-    global x; x= zeros(4,1);
-    global A; A= zeros(4,1);
-    global B; B= zeros(4,1);
-    global T; T= zeros(4,1);
-    global E; E= zeros(4,1);
-    global x_est; x_est= [];
-    global m; m=4;
-    global i; i=m;
-    global Q, Q=4;
-
-    
-    bounds(x,A,B,T,E,d_c, m,i,Q,R_mat,y);
-    function bounds(x,A,B,T,E,d_c,m,i,Q,R_mat,y)
-        if d_c < T(i)
-            increment(x,A,B,T,E,d_c, m,i,Q,R_mat,y);
-        else
-            compute1= (y(i)-E(i)-sqrt(d_c-T(i)))/R_mat(i,i);
-            compute2= (y(i)-E(i)+sqrt(d_c-T(i)))/R_mat(i,i);
-            A(i)=max(0,ceil(compute1));
-            B(i)=min(Q-1,floor(compute2));
-            x(i)=A(i)-1;
-            natural_spanning(x,A,B,T,E,d_c, m,i,Q,R_mat,y);
-        end
-    end
+%parametres
+bps=4; 
+M=2^bps;
+nBits=1e3*bps;
+SNR = [3,5,10,15,20,25,30,40,45,50]
+%constellation
+symMap       = [11 10 14 15 9 8 12 13 1 0 4 5 3 2 6 7];
 
 
-    function natural_spanning(x,A,B,T,E,d_c, m,i,Q,R_mat,y)
-        x(i)=x(i)+1;
-        if x(i) <= B(i)
-            decrement(x,A,B,T,E,d_c, m,i,Q,R_mat,y);      
-        else
-            increment(x,A,B,T,E,d_c, m,i,Q,R_mat,y);
-        end
-    end
+Re = -(sqrt(M)-1):2:(sqrt(M)-1);
+Im = 1j*Re;+++++++
+%signal space
+sym = repmat(Re,4,1);
+sym = sym(:) + repmat(Im,1,4)';
+%sym          = reshape(sym,[M,1]);
+averagePower = sum(abs(sym).^2)/16;
+
+error =[];
+for snr = SNR
+    avg=0;
+    for V = 1:50
+
+%random input datastream
+data            = randi([0 1],nBits,1);
+
+%modulation
+modData = qammod(data,M,symMap);
+
+%channel parameters
+h11_r = normrnd(0,(1/sqrt(2)));
+h11_i = normrnd(0,(1/sqrt(2)));
+h12_r = normrnd(0,(1/sqrt(2)));
+h12_i = normrnd(0,(1/sqrt(2)));
+h21_r = normrnd(0,(1/sqrt(2)));
+h21_i = normrnd(0,(1/sqrt(2)));
+h22_r = normrnd(0,(1/sqrt(2)));
+h22_i = normrnd(0,(1/sqrt(2)));
+
+h11 = h11_r + 1j*h11_i;
+h12 = h12_r + 1j*h12_i;
+h21 = h21_r + 1j*h21_i;
+h22 = h22_r + 1j*h22_i;
+
+%channel matrix H
+H = [[h11,h12];[h21,h22]]; 
+len=nBits/bps; 
+x = reshape(modData,[2,len/2]);
+
+%signal after passing through channel
+y1 = H*x;
+y1 = y1(:);
 
 
+%adding noise 
+rxsig           = awgn(y1,snr,averagePower);
 
-    function increment(x,A,B,T,E,d_c, m,i,Q,R_mat,y)
-        if i==m
-            if isempty(x_est)
-                d_c = 2*d_c;
-                x_est = sphere_dec(d_c,R_mat,y);
-            else 
-                return
-            end
-        else
-            i=i+1;
-            natural_spanning(x,A,B,T,E,d_c, m,i,Q,R_mat,y);
-        end
-    end
+%manipulations required for sphere decoding
+%rxsig_real      = real(rxsig);
+%rxsig_img       = imag(rxsig);
 
 
+%for i=1:len
+ %   rxsig_2(2*i-1)=rxsig_real(i);
+%    rxsig_2(2*i)=rxsig_img(i);
+%end
 
-    function  decrement(x,A,B,T,E,d_c, m,i,Q,R_mat,y)
-        if i>1
-            for j = i:m
-                E(i-1) = E(i-1) + R_mat(i-1,j)*x(j);
-            end
-            T(i-1) = T(i) + (y(i)-E(i)-R_mat(i,i)*x(i))^2;
-            i = i-1;
-            bounds(x,A,B,T,E,d_c, m,i,Q,R_mat,y);
+%rxsig_2=reshape(rxsig_2,[4,len/2]);%
 
-        else
-            x_est = [x_est x];           
-            d = T(1)+(y(1)-E(1)-R_mat(1,1)*x(1))^2;
-            if d<d_c
-                d_c = d;
-                for L = 1:m
-                    B(L) = min(Q-1,floor((y(L)-E(L)+sqrt(d_c-T(L)))/R_mat(L,L)));
-                end
-            natural_spanning(x,A,B,T,E,d_c, m,i,Q,R_mat,y);
+%B = [[h11_r,-h11_i,h12_r,-h12_i];[h11_i,h11_r,h12_i,h12_r];[h21_r,-h21_i,h22_r,-h22_i];[h21_i,h21_r,h22_i,h22_r]];
+%shift = zeros(4,1)+3;
 
-            end
+%y_c = rxsig_2 + B*shift;
+%[Q,R] = qr(2*B);
+%D = diag(sign(diag(R)));    
+%Qunique = Q*D; %
+%Runique = D*R;
+%y_dash = Qunique'*y_c;
 
-        end
+%decodedData = zeros(4,len/2);
 
-    end
+
+%decoding using sphere decoding
+%for z = 1:(len/2)
+%    x_mat = sphere_dec(1,Runique,y_dash(:,z))
+%    decodedData(:,z) = 2*x_mat - shift;
+   
+%end
+
+%decodedData = reshape(decodedData,[2,len])';
+%decodedData = decodedData(:,1)+1j*decodedData(:,2);
+
+%demodulation
+%rxData = qamdemod(decodedData,M,symMap)';
+%rxData = rxData(:);
+
+%error analysis of sphere decoder
+%errorStats = ber(data,rxData);
+
+
+%simple ML detection
+decodedData_ML = simpleMLdetection(rxsig,H,M);
+rxData_ML = qamdemod(decodedData_ML,M,symMap)';
+rxData_ML = rxData_ML(:);
+errorStats_ML = ber(data,rxData_ML);
+avg =avg+errorstats_ML(1);
+
+end
+error =[error avg/50];
 end
